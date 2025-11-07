@@ -1,0 +1,28 @@
+name: Daily Remote DevOps Scraper
+
+on:
+  schedule:
+    - cron: "0 9 * * *"   # 9AM UTC (adjust if you prefer Kigali local)
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run scraper and email
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+        run: |
+          python devops_job_scraper.py
