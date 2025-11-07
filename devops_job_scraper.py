@@ -66,7 +66,7 @@ def scrape_site(name, url):
     soup = BeautifulSoup(r.text, "html.parser")
     for a in soup.find_all("a", href=True):
         text = a.get_text(" ", strip=True)
-        href = urljoin(url, a["href"])
+        href = urljoin(url, str(a["href"]))
         if any(k in text.lower() for k in ["devops", "sre", "infrastructure", "site reliability"]):
             # Check if job is explicitly tagged as remote/worldwide
             if any(tag in text.lower() for tag in ["work from anywhere", "worldwide remote"]):
@@ -120,11 +120,13 @@ def main():
     all_jobs = []
     for name, url in JOB_SITES.items():
         all_jobs.extend(scrape_site(name, url))
+    print(f"Total jobs found: {len(all_jobs)}")
     if not all_jobs:
         html = "<p>No DevOps jobs found today.</p>"
     else:
         html = build_html(all_jobs)
     send_email(html)
+    print("Script completed successfully.")
 
 
 if __name__ == "__main__":
